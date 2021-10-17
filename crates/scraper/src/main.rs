@@ -1,17 +1,18 @@
 use easy_http_request::DefaultHttpRequest;
-use scraper::{Html, Selector};
 use itertools::Itertools;
-use std::fmt::Debug;
-use std::fs;
 use rand::seq::IteratorRandom;
 use rand::Rng;
+use scraper::{Html, Selector};
+use std::fmt::Debug;
+use std::fs;
 
 fn parse_html(document: String) -> Vec<(String, String, Vec<u32>)> {
     let fragment = Html::parse_fragment(&document);
     // dbg!(&document);
     let selector = Selector::parse("li").unwrap();
 
-    fragment.select(&selector)
+    fragment
+        .select(&selector)
         .map(|html| html.inner_html().trim().to_string())
         // .map(|x| dbg!(x))
         // .filter_map(|num_str| num_str.parse::<u32>().ok())
@@ -35,12 +36,16 @@ fn parse_html(document: String) -> Vec<(String, String, Vec<u32>)> {
 
 fn download_data(year: impl std::fmt::Display) -> Vec<(String, String, Vec<u32>)> {
     let url = format!("http://megalotto.pl/wyniki/lotto/losowania-z-roku-{}", year);
-    let response = DefaultHttpRequest::get_from_url_str(&url).unwrap().send().unwrap();
+    let response = DefaultHttpRequest::get_from_url_str(&url)
+        .unwrap()
+        .send()
+        .unwrap();
     let html = String::from_utf8(response.body).unwrap();
     let document = Html::parse_document(&html);
     let selector = Selector::parse(".lista_ostatnich_losowan").unwrap();
 
-    document.select(&selector)
+    document
+        .select(&selector)
         .map(|doc| doc.inner_html())
         .flat_map(parse_html)
         .collect()
@@ -87,16 +92,18 @@ fn distances(data: Vec<Vec<u32>>) -> Vec<u32> {
 }
 
 fn repetitions(items: Vec<u32>) -> Vec<(u32, u32)> {
-    let mut repetitions = items.iter()
+    let mut repetitions = items
+        .iter()
         .sorted()
         .unique()
         .map(|diff| (*diff, 0))
         .collect_vec();
 
     for diff in items.iter() {
-        repetitions.iter_mut()
+        repetitions
+            .iter_mut()
             .find(|(item, _)| item == diff)
-            .map(|(_, rep)| *rep+=1);
+            .map(|(_, rep)| *rep += 1);
     }
 
     repetitions
@@ -165,11 +172,18 @@ fn outcome_viability(generated: &Vec<u32>, diff_sums: &Vec<u32>) -> bool {
 
 fn generate_outcome(dist: &Vec<u32>) -> Vec<u32> {
     let mut rng = rand::thread_rng();
-    let values = dist.into_iter().map(|val| *val).choose_multiple(&mut rng, 5);
+    let values = dist
+        .into_iter()
+        .map(|val| *val)
+        .choose_multiple(&mut rng, 5);
     let mut number = rng.gen_range(1, 20);
 
-    Some(0).into_iter()
+    Some(0)
+        .into_iter()
         .chain(values)
-        .update(|mut val| {*val += number; number = *val})
+        .update(|mut val| {
+            *val += number;
+            number = *val
+        })
         .collect_vec()
 }
