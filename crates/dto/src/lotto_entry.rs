@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 pub type Date = String; // for now its not needed
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LottoEntry {
     pub date: Date,
     pub order: usize,
