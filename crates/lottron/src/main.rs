@@ -1,5 +1,5 @@
 use std::{collections::HashMap, fs, path::Path};
-use lotto_dto::LottoEntry;
+use lotto_dto::{Historgram, LottoEntry};
 use walkdir::WalkDir;
 use std::io;
 use itertools::Itertools;
@@ -44,22 +44,31 @@ fn numbers_by_last_occurances(entries: Vec<LottoEntry>) -> Vec<(u8, usize)> {
 }
 
 fn main() {
-    let data = load_data("data/");
+    let data = load_data("data/lotto");
 
     let last_occurrence = numbers_by_last_occurances(data.clone());
+
+    Historgram::new("Numbers by last occurance", last_occurrence)
+        .write_to_file("data/plots/last_occurrence.json")
+        .expect("Writing to file");
+
     let most_common_numbers = most_common_numbers(data);
 
-    let nums = last_occurrence
-        .into_iter()
-        .map(|(num, _)| num)
-        .take(10)
-        .chain(
-            most_common_numbers
-                .into_iter()
-                .map(|(num, _)| num)
-                .take(10)
-        )
-        .collect_vec();
+    Historgram::new("Most commonly apearing numbers in years 2010-2021", most_common_numbers)
+        .write_to_file("data/plots/most_common.json")
+        .expect("Writing to file");
 
-    dbg!(nums);
+    // let nums = last_occurrence
+    //     .into_iter()
+    //     .map(|(num, _)| num)
+    //     .take(10)
+    //     .chain(
+    //         most_common_numbers
+    //             .into_iter()
+    //             .map(|(num, _)| num)
+    //             .take(10)
+    //     )
+    //     .collect_vec();
+
+    // dbg!(nums);
 }

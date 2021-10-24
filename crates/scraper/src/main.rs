@@ -8,15 +8,11 @@ use std::fs;
 
 fn parse_html(document: String) -> Vec<(String, String, Vec<u32>)> {
     let fragment = Html::parse_fragment(&document);
-    // dbg!(&document);
     let selector = Selector::parse("li").unwrap();
 
     fragment
         .select(&selector)
         .map(|html| html.inner_html().trim().to_string())
-        // .map(|x| dbg!(x))
-        // .filter_map(|num_str| num_str.parse::<u32>().ok())
-        // .collect()
         .fold(vec![], |mut acc, num_str| {
             if num_str.contains('.') {
                 acc.push((num_str, String::default(), vec![]));
