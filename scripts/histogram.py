@@ -17,9 +17,11 @@ for [x, y] in data:
 
 # TODO
 # print(histogram)
-plt.hist(histogram, rwidth=0.1, bins = np.arange(1, 49, 1))
+xticks = np.arange(0,50,1)
+bins = np.arange(0,50, 0.5)
+plt.hist(histogram, rwidth=1, bins = bins)
 plt.title(title)
-plt.xlim(0, 49, 1)
+plt.xticks(xticks)
 plt.xlabel('Lotto number')
 plt.ylabel('Number of occurrences')
 plt.show()
